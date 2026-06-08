@@ -39,14 +39,13 @@ const HomePage = () => {
     fetchNotes();
   }, []);
 
-  const filteredNotes = notes.filter(
+    const sortedNotes = [...notes].sort((a, b) => b.isPinned - a.isPinned);
+
+  const filteredNotes = sortedNotes.filter(
     (note) =>
       note.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      note.content.toLowerCase().includes(searchTerm.toLowerCase()),
+      note.content.toLowerCase().includes(searchTerm.toLowerCase())
   );
-  const sortedNotes = [...notes].sort(
-  (a, b) => b.isPinned - a.isPinned
-);
   return (
     <div className="min-h-screen">
       <Navbar searchTerm={searchTerm} setSearchTerm={setSearchTerm} />

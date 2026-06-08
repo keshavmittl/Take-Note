@@ -26,21 +26,22 @@ const NoteCard = ({ note, setNotes }) => {
     }
   };
   const handlePin = async (e, id) => {
-    e.preventDefault();
-    e.stopPropagation();
+  e.preventDefault();
+  e.stopPropagation();
 
-    try {
-      const response = await api.patch(`/notes/${id}/pin`);
+  try {
+    const response = await api.patch(`/notes/${id}/pin`);
+    setNotes((prevNotes) =>
+      [...prevNotes.map((n) => (n._id === id ? response.data: n))]
+        .sort((a, b) => b.isPinned - a.isPinned)
+    );
 
-      setNotes((prevNotes) =>
-        prevNotes.map((note) => (note._id === id ? response.data : note)),
-      );
+    toast.success(response.data.note?.isPinned ? "Note pinned" : "Note unpinned");
+  } catch (error) {
+    console.error("Pin error:", error.message);
+    toast.error("Failed to update pin");
+  }
 
-      toast.success(response.data.isPinned ? "Note pinned" : "Note unpinned");
-    } catch (error) {
-      console.error(error);
-      toast.error("Failed to update pin");
-    }
   };
   return (
     <Link
@@ -61,10 +62,11 @@ const NoteCard = ({ note, setNotes }) => {
               className="btn btn-ghost btn-xs hover:bg-base-300"
             >
               <PinIcon
-                className={`size-4 transition-all duration-200 ${note.isPinned
+                className={`size-4 transition-all duration-200 ${
+                  note.isPinned
                     ? "text-[#1c4f81] fill-[#1c4f81]"
                     : "text-base-content/40"
-                  }`}
+                }`}
               />
             </button>
             <PenSquareIcon className="size-4" />
