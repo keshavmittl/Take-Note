@@ -1,41 +1,39 @@
-import express from "express"
-import dotenv from "dotenv";
-import notesRoutes from "./routes/notesRoutes.js"
-import {connectDB} from "./config/db.js" 
-import cors from "cors"
+import { fileURLToPath } from "url";
 import path from "path";
-import rateLimiter from "./middleware/rateLimiter.js";
-dotenv.config();
-const app = express()
-const __dirname = path.resolve();
+import dotenv from "dotenv";
 
-//midddleware
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+dotenv.config({ path: path.join(__dirname, "../.env") });
+
+console.log("NODE_ENV:", process.env.NODE_ENV);
+
+import express from "express";
+import cors from "cors";
+import notesRoutes from "./routes/notesRoutes.js";
+import { connectDB } from "./config/db.js";
+import rateLimiter from "./middleware/rateLimiter.js";
+
+const app = express();
+const PORT = process.env.PORT || 5001;
+
 if (process.env.NODE_ENV !== "production") {
-  app.use(
-    cors({
-      origin: "http://localhost:5173",
-    })
-  );
+  app.use(cors({ origin: "http://localhost:5173" }));
 }
+
 app.use(express.json());
 app.use(rateLimiter);
-app.use("/api/notes" , notesRoutes);
-
+app.use("/api/notes", notesRoutes);
 
 if (process.env.NODE_ENV === "production") {
   app.use(express.static(path.join(__dirname, "../frontend/dist")));
-
   app.get("*", (req, res) => {
     res.sendFile(path.join(__dirname, "../frontend", "dist", "index.html"));
   });
 }
 
-
 connectDB().then(() => {
-    app.listen(process.env.PORT,() =>{
-    console.log("Server started on port:" , process.env.PORT);
+  app.listen(PORT, () => {
+    console.log("Server started on PORT:", PORT);
+  });
 });
-}).catch((error) => {
-    console.error("Error connecting to MongoDB:", error);
-});
-
