@@ -6,7 +6,7 @@ import api from "../lib/axios";
 import toast from "react-hot-toast";
 import NoteCard from "../components/NoteCard";
 import NotesNotFound from "../components/NoteNotFound";
-import SearchBar from "../components/searchBar";
+import SearchBar from "../components/SearchBar";
 import { SearchIcon } from "lucide-react";
 import React from "react";
 
